@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin CRUD User</title>
+  <link rel="stylesheet" href="app.css">
+
+  <!-- <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #4CAF50;
+    }
+
+    /* Button add user */
+    .add-btn {
+      display: inline-block;
+      margin-bottom: 15px;
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .add-btn:hover {
+      background-color: #45a049;
+    }
+
+    /* TABLE */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+
+    table th, table td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    table th {
+      background-color: #4CAF50;
+      color: #fff;
+    }
+
+    table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background-color: #ff9800;
+      color: white;
+    }
+
+    button.delete {
+      background-color: #f44336;
+    }
+
+    /* ================= MODAL ================= */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background-color: #fff;
+      width: 400px;
+      padding: 20px;
+      border-radius: 8px;
+      position: relative;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        transform: translateY(-20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal h2 {
+      margin-bottom: 15px;
+      color: #4CAF50;
+      text-align: center;
+    }
+
+    .close-btn {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      font-size: 20px;
+      cursor: pointer;
+      color: #999;
+    }
+
+    .close-btn:hover {
+      color: #000;
+    }
+
+    .modal input,
+    .modal button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+
+    .modal button {
+      background-color: #4CAF50;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .modal button:hover {
+      background-color: #45a049;
+    }
+  </style> -->
+</head>
+
+<body>
+  <h1>Users Manager</h1>
+
+  <div class="add-btn-ctn"><button class="add-btn" onclick="openModal()">+ Add User</button></div>
+
+  <!-- USER TABLE -->
+  <table id="userTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Website</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- ================= MODAL FORM ================= -->
+  <div class="modal" id="userModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">×</span>
+      <h2>Add / Edit User</h2>
+      <form id="userForm">
+        <input type="hidden" id="userId" />
+        <input type="text" id="name" placeholder="Name" required />
+        <input type="text" id="username" placeholder="Username" required />
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="text" id="phone" placeholder="Phone" required />
+        <input type="text" id="website" placeholder="Website" required />
+        <button type="submit">Save User</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= JS ================= -->
+  <script src="app.js"></script>
+</body>
+</html>
