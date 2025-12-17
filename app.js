@@ -1,20 +1,20 @@
-    function openModal() {
-      document.getElementById("userModal").style.display = "flex";
-    }
+function openModal() {
+  document.getElementById("userModal").style.display = "flex";
+}
 
-    function closeModal() {
-      document.getElementById("userModal").style.display = "none";
-      document.getElementById("userForm").reset();
-      document.getElementById("userId").value = "";
-    }
+function closeModal() {
+  document.getElementById("userModal").style.display = "none";
+  document.getElementById("userForm").reset();
+  document.getElementById("userId").value = "";
+}
 
-    // Đóng popup khi click ra ngoài
-    window.onclick = function (e) {
-      const modal = document.getElementById("userModal");
-      if (e.target === modal) {
-        closeModal();
-      }
-    };
+// Đóng popup khi click ra ngoài
+window.onclick = function (e) {
+  const modal = document.getElementById("userModal");
+  if (e.target === modal) {
+    closeModal();
+  }
+};
 
 
 // API endpoint
@@ -37,7 +37,7 @@ const renderUserTable = () => {
   const users = getUsersFromSession();
   const tableBody = document.querySelector('#userTable tbody');
   tableBody.innerHTML = ''; // Clear current table rows
-  
+
   users.forEach(user => {
     const row = document.createElement('tr');
     row.innerHTML = `
@@ -56,31 +56,83 @@ const renderUserTable = () => {
   });
 };
 
-// Thêm người dùng mới
-const addUser = (user) => {
-  const users = getUsersFromSession();
-  users.push(user);
-  saveUsersToSession(users);
-  renderUserTable();
+const apiRequest = async (url, method, data = null) => {
+  const options = {
+    method,
+    headers: {
+      "Content-Type": "application/json"
+    }
+  };
+
+  if (data) {
+    options.body = JSON.stringify(data);
+  }
+
+  const response = await fetch(url, options);
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+
+  return response.json();
 };
 
-// Cập nhật người dùng
-const updateUser = (updatedUser) => {
-  const users = getUsersFromSession();
-  const index = users.findIndex(user => user.id === updatedUser.id);
-  if (index !== -1) {
-    users[index] = updatedUser;
+// Thêm người dùng mới
+const addUser = async (user) => {
+  try {
+    const result = await apiRequest(API_URL, "POST", user);
+
+    // Nếu API OK -> mới lưu session
+    const users = getUsersFromSession();
+    users.push({ ...user, id: result.id || user.id });
+
     saveUsersToSession(users);
     renderUserTable();
+    closeModal();
+  } catch (error) {
+    alert("Thêm user thất bại!");
+    console.error(error);
   }
 };
 
+
+// Cập nhật người dùng
+const updateUser = async (updatedUser) => {
+  try {
+    await apiRequest(`${API_URL}/${updatedUser.id}`, "PUT", updatedUser);
+
+    const users = getUsersFromSession();
+    const index = users.findIndex(u => u.id === updatedUser.id);
+
+    if (index !== -1) {
+      users[index] = updatedUser;
+      saveUsersToSession(users);
+      renderUserTable();
+      closeModal();
+    }
+  } catch (error) {
+    alert("Cập nhật user thất bại!");
+    console.error(error);
+  }
+};
+
+
 // Xóa người dùng
-const deleteUser = (userId) => {
-  let users = getUsersFromSession();
-  users = users.filter(user => user.id !== userId);
-  saveUsersToSession(users);
-  renderUserTable();
+const deleteUser = async (userId) => {
+  if (!confirm("Bạn có chắc muốn xóa user này?")) return;
+
+  try {
+    await apiRequest(`${API_URL}/${userId}`, "DELETE");
+
+    let users = getUsersFromSession();
+    users = users.filter(user => user.id !== userId);
+
+    saveUsersToSession(users);
+    renderUserTable();
+  } catch (error) {
+    alert("Xóa user thất bại!");
+    console.error(error);
+  }
 };
 
 // Chỉnh sửa thông tin người dùng
@@ -101,21 +153,15 @@ const editUser = (userId) => {
 // Xử lý form submit
 document.getElementById('userForm').addEventListener('submit', function (e) {
   e.preventDefault();
-  
-  const userId = document.getElementById('userId').value;
-  const name = document.getElementById('name').value;
-  const username = document.getElementById('username').value;
-  const email = document.getElementById('email').value;
-  const phone = document.getElementById('phone').value;
-  const website = document.getElementById('website').value;
 
+  const userId = document.getElementById('userId').value;
   const user = {
-    id: userId ? parseInt(userId) : Date.now(),  // Nếu không có ID, dùng thời gian hiện tại làm ID
-    name,
-    username,
-    email,
-    phone,
-    website,
+    id: userId ? parseInt(userId) : Date.now(),
+    name: name.value,
+    username: username.value,
+    email: email.value,
+    phone: phone.value,
+    website: website.value
   };
 
   if (userId) {
@@ -123,11 +169,10 @@ document.getElementById('userForm').addEventListener('submit', function (e) {
   } else {
     addUser(user);
   }
-
-  // Clear form fields
-  document.getElementById('userForm').reset();
-  document.getElementById('userId').value = '';
 });
+
+
+
 
 // Lấy dữ liệu từ API và lưu vào sessionStorage khi lần đầu tiên mở trang
 const loadInitialData = async () => {
